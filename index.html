@@ -15,7 +15,7 @@
             --text-muted: #5c5c6d;
             --border: rgba(0, 0, 0, 0.08);
             --shadow: rgba(0, 0, 0, 0.06);
-            --section-padding: 10rem;
+            --section-padding: 7.5rem;
             --orange: #ff6b35;
             --red: #e63946;
             --yellow: #fbbf24;
@@ -157,6 +157,88 @@
             0%, 100% { box-shadow: 0 16px 48px rgba(124, 58, 237, 0.15); }
             50% { box-shadow: 0 20px 56px rgba(124, 58, 237, 0.2); }
         }
+        @keyframes phoneFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulseRing {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scroll progress */
+        .scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            width: 0%;
+            z-index: 1001;
+            background: linear-gradient(90deg, var(--orange), var(--purple), var(--blue));
+            background-size: 200% 100%;
+            animation: gradientFlow 4s ease infinite;
+            transition: width 0.12s ease-out;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* Stagger reveal */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-fade {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        .reveal-fade.visible { opacity: 1; }
+
+        /* Back to top */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem; right: 2rem;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: linear-gradient(135deg, var(--purple), var(--orange));
+            box-shadow: 0 8px 28px var(--accent-glow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px) scale(0.9);
+            transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s, box-shadow 0.3s ease;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+        .back-to-top:hover {
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 14px 36px var(--accent-glow);
+        }
+        .back-to-top::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: inherit;
+            animation: pulseRing 2s ease-out infinite;
+            z-index: -1;
+        }
 
         /* Nav — glass section (glassmorphism) */
         nav {
@@ -224,6 +306,65 @@
         nav a:hover { color: var(--purple); transform: translateY(-2px); }
         nav a:hover::before { width: 100%; }
         nav a:hover::after { opacity: 1; }
+        nav a.active {
+            color: var(--purple);
+            font-weight: 600;
+        }
+        nav a.active::before { width: 100%; }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 44px;
+            height: 44px;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            z-index: 1002;
+            transition: var(--transition);
+        }
+        .nav-toggle:hover {
+            background: var(--purple-soft);
+            border-color: rgba(124, 58, 237, 0.25);
+        }
+        .nav-toggle span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 2px;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            margin: 0 auto;
+        }
+        nav.menu-open .nav-toggle span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        nav.menu-open .nav-toggle span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        nav.menu-open .nav-toggle span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+        .nav-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 26, 26, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden !important;
+            transition: opacity 0.35s ease, visibility 0.35s;
+        }
+        .nav-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        section[id], footer[id] { scroll-margin-top: 5.5rem; }
 
         .container {
             max-width: 1100px;
@@ -244,6 +385,15 @@
         section.visible.slide-left { animation: sectionSlideLeft 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         section.visible.slide-right { animation: sectionSlideRight 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
+        .section-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--purple);
+            margin-bottom: 0.75rem;
+        }
         h2 {
             font-family: 'Libre Baskerville', serif;
             font-size: 2.4rem;
@@ -252,6 +402,8 @@
             display: inline-block;
             color: var(--text-main);
         }
+        .section-header { margin-bottom: 3rem; }
+        .section-header h2 { margin-bottom: 0; }
         h2::after {
             content: '';
             position: absolute;
@@ -297,10 +449,12 @@
             animation: fadeInUp 1s ease forwards;
         }
         .hero h1 .highlight {
-            background: linear-gradient(135deg, var(--blue), var(--orange));
+            background: linear-gradient(135deg, var(--blue), var(--purple), var(--orange), var(--blue));
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradientFlow 6s ease infinite;
             transition: filter 0.5s ease;
         }
         .hero h1 .highlight:hover { filter: brightness(1.15); }
@@ -420,6 +574,8 @@
             padding: 1rem 0;
             border-top: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
+            animation: slideDown 0.8s ease 0.6s forwards;
+            opacity: 0;
         }
         .contact-strip .container {
             display: flex;
@@ -500,6 +656,7 @@
         }
         .logo-card p { color: var(--text-muted); font-weight: 500; transition: var(--transition); }
         .logo-card:hover p { color: var(--purple); transform: translateY(-2px); }
+        a.logo-card { color: inherit; display: block; }
         .logo-card.reveal-item { opacity: 0; transform: translateY(30px) scale(0.95); }
         .logo-card.reveal-item.visible { animation: bounceIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
@@ -557,6 +714,233 @@
         .redesign-item:hover .redesign-overlay p {
             transform: translateY(0);
             opacity: 1;
+        }
+
+        /* Connect / Figma UI */
+        #connect {
+            background: linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.03) 50%, transparent 100%);
+        }
+        .connect-intro {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 3rem;
+            padding: 2.5rem 2.75rem;
+            background: linear-gradient(135deg, #ffffff 0%, #faf8ff 45%, #fff8f5 100%);
+            border-radius: 28px;
+            border: 1px solid rgba(124, 58, 237, 0.12);
+            box-shadow: 0 16px 48px rgba(124, 58, 237, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+        .connect-intro::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--purple), var(--orange), var(--blue));
+        }
+        .connect-intro::after {
+            content: '';
+            position: absolute;
+            top: -80px; right: -80px;
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .connect-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.4rem 0.9rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--purple);
+            background: var(--purple-soft);
+            border-radius: 50px;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+        }
+        .connect-badge i { font-size: 0.9rem; }
+        .connect-intro-text h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: clamp(1.6rem, 3vw, 2rem);
+            margin-bottom: 0.35rem;
+            color: var(--text-main);
+            line-height: 1.25;
+        }
+        .connect-intro-text .connect-subtitle {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--orange);
+            margin-bottom: 1rem;
+        }
+        .connect-intro-text > p {
+            color: var(--text-muted);
+            font-size: 1.02rem;
+            line-height: 1.75;
+            max-width: 680px;
+        }
+        .connect-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1.5rem;
+        }
+        .connect-pills span {
+            padding: 0.4rem 0.95rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+        .connect-pills span:hover {
+            color: var(--purple);
+            border-color: rgba(124, 58, 237, 0.3);
+            background: var(--purple-soft);
+            transform: translateY(-2px);
+        }
+        .figma-showcase {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: clamp(2rem, 5vw, 4rem);
+            flex-wrap: wrap;
+            padding: 3rem 2rem;
+            background: linear-gradient(165deg, #f3f1f9 0%, #ebe8f4 40%, #f5f3fa 100%);
+            border-radius: 32px;
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+        .figma-phone {
+            flex: 0 1 320px;
+            max-width: 320px;
+            text-align: center;
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .figma-phone:hover { transform: translateY(-12px); }
+        .figma-phone.visible .figma-phone-frame {
+            animation: phoneFloat 5s ease-in-out infinite;
+        }
+        .figma-phone.visible:nth-child(2) .figma-phone-frame {
+            animation-delay: -2.5s;
+        }
+        .figma-phone-frame {
+            position: relative;
+            padding: 10px;
+            background: linear-gradient(145deg, #2a2a2e 0%, #1a1a1e 100%);
+            border-radius: 40px;
+            box-shadow:
+                0 32px 64px rgba(0, 0, 0, 0.22),
+                0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+                0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+        .figma-phone-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 32px;
+            background: #fafafa;
+            object-fit: contain;
+            object-position: center center;
+        }
+        .figma-phone-label {
+            margin-top: 1.5rem;
+            padding: 0 0.5rem;
+        }
+        .figma-phone-label h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+        .figma-phone-label p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+        .figma-screen-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px; height: 28px;
+            margin-bottom: 0.65rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--purple), var(--orange));
+            border-radius: 50%;
+        }
+
+        /* Canva designs */
+        #canva {
+            background: linear-gradient(180deg, transparent 0%, rgba(255, 107, 53, 0.03) 50%, transparent 100%);
+        }
+        .canva-intro {
+            margin-bottom: 2.5rem;
+            padding: 2rem 2.25rem;
+            background: linear-gradient(135deg, #ffffff 0%, #fff8f5 50%, #ffffff 100%);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 107, 53, 0.12);
+            box-shadow: 0 12px 40px rgba(255, 107, 53, 0.06);
+        }
+        .canva-intro p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+            max-width: 720px;
+        }
+        .canva-intro p strong { color: var(--text-main); }
+        .canva-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.75rem;
+        }
+        .canva-item {
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+        }
+        .canva-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 22px 48px var(--shadow), 0 0 0 2px rgba(255, 107, 53, 0.2);
+        }
+        .canva-item img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            object-position: center top;
+            background: #f0f0f5;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .canva-item:hover img { transform: scale(1.04); }
+        .canva-caption {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+        .canva-caption h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+        }
+        .canva-caption p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .canva-tag {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--purple);
+            background: var(--purple-soft);
+            border-radius: 50px;
         }
 
         /* Experience */
@@ -754,26 +1138,175 @@
         footer a:hover { color: var(--orange); }
         footer a:hover::after { width: 100%; }
 
-        @media (max-width: 768px) {
-            nav ul { gap: 1rem; }
-            .hero h1 { font-size: 2.2rem; }
-            .redesign-grid { grid-template-columns: 1fr; }
-            section { padding: 6rem 0; }
-            .logo-grid { grid-template-columns: repeat(2, 1fr); }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            html { scroll-behavior: auto; }
+            .reveal-up { opacity: 1; transform: none; }
+            section { opacity: 1; transform: none; }
         }
+
+        @media (max-width: 1024px) {
+            :root { --section-padding: 6rem; }
+            h2 { font-size: 2.1rem; }
+            .canva-grid { grid-template-columns: repeat(2, 1fr); }
+            .figma-phone { max-width: 290px; flex: 0 1 290px; }
+        }
+
+        @media (max-width: 900px) {
+            .nav-toggle { display: flex; }
+            nav {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                background: #ffffff;
+                border-bottom: 1px solid var(--border);
+            }
+            nav.scrolled {
+                background: #ffffff;
+            }
+            nav ul.nav-menu {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: min(300px, 88vw);
+                height: 100vh;
+                height: 100dvh;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0;
+                padding: 5.5rem 1.5rem 2rem;
+                background: #ffffff;
+                border-left: 1px solid var(--border);
+                box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+                transform: translateX(100%);
+                transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+                z-index: 1002;
+                overflow-y: auto;
+                isolation: isolate;
+            }
+            .nav-toggle { z-index: 1003; }
+            nav.menu-open ul.nav-menu {
+                transform: translateX(0);
+            }
+            nav ul.nav-menu li {
+                border-bottom: 1px solid var(--border);
+            }
+            nav ul.nav-menu a {
+                display: block;
+                padding: 1rem 0.5rem;
+                font-size: 1.05rem;
+            }
+            nav ul.nav-menu a::before { bottom: 0.5rem; }
+            nav ul.nav-menu a:hover { transform: none; }
+        }
+
+        @media (max-width: 768px) {
+            :root { --section-padding: 5rem; }
+            nav { padding: 0.75rem 1rem; }
+            nav.scrolled { padding: 0.5rem 1rem; }
+            .container { padding: 1.25rem 1rem; }
+            .back-to-top { bottom: 1.25rem; right: 1.25rem; width: 44px; height: 44px; }
+
+            .hero { min-height: 100svh; padding-top: 4.5rem; }
+            .hero h1 { font-size: clamp(1.85rem, 7vw, 2.2rem); }
+            .hero .tagline { font-size: 1rem; padding: 0 0.5rem; }
+            .hero-quote {
+                margin: 0 0.5rem 2rem;
+                padding: 1.25rem 1.5rem;
+            }
+            .hero-quote p { font-size: 1rem; }
+            .hero-cta {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0 1rem;
+            }
+            .hero-cta .btn {
+                justify-content: center;
+                width: 100%;
+            }
+            .scroll-hint { display: none; }
+
+            .contact-strip .container {
+                flex-direction: column;
+                gap: 0.85rem;
+                text-align: center;
+            }
+            .contact-strip a, .contact-strip span {
+                justify-content: center;
+                font-size: 0.9rem;
+            }
+
+            h2 { font-size: 1.85rem; margin-bottom: 2rem; }
+            .exp-block { padding: 1.75rem 1.5rem; }
+            .exp-block li { padding-left: 1.25rem; font-size: 0.9rem; }
+            .exp-item { padding: 1.25rem 1.25rem; }
+
+            .redesign-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .figma-showcase {
+                padding: 1.75rem 1rem;
+                gap: 2.5rem;
+                border-radius: 24px;
+            }
+            .figma-phone {
+                max-width: min(280px, 100%);
+                flex: 0 1 100%;
+                width: 100%;
+            }
+            .figma-phone-frame { border-radius: 32px; padding: 8px; }
+            .figma-phone-frame img { border-radius: 26px; }
+
+            .connect-intro { padding: 1.75rem 1.25rem; text-align: center; }
+            .connect-intro-text h3 { font-size: 1.5rem; }
+            .connect-pills { justify-content: center; }
+
+            .canva-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .canva-intro { padding: 1.5rem 1.25rem; }
+
+            .logo-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .logo-card { padding: 1.5rem 1rem; }
+
+            .skills-container { gap: 0.65rem; }
+            .skill-tag { padding: 0.6rem 1.1rem; font-size: 0.85rem; }
+
+            .info-cards { grid-template-columns: 1fr; }
+            .attributes { gap: 0.65rem; }
+            .attr-pill { font-size: 0.85rem; padding: 0.55rem 1rem; }
+
+            section { padding: var(--section-padding) 0; }
+            section[id], footer[id] { scroll-margin-top: 4.5rem; }
+        }
+
         @media (max-width: 480px) {
+            :root { --section-padding: 4rem; }
+            nav .logo { font-size: 1.2rem; }
             .logo-grid { grid-template-columns: 1fr; }
+            h2 { font-size: 1.65rem; }
+            .figma-phone { max-width: 100%; }
+            .connect-pills span { font-size: 0.78rem; padding: 0.35rem 0.75rem; }
+            footer p { font-size: 0.85rem; }
+            footer .container { padding: 0 0.5rem; }
         }
     </style>
 </head>
 <body>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+    <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+    <button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
     <div class="page-content">
         <nav id="nav">
             <div class="container">
                 <a href="#" class="logo">MS</a>
-                <ul>
+                <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
+                    <span></span><span></span><span></span>
+                </button>
+                <ul class="nav-menu" id="navMenu">
                     <li><a href="#about">About</a></li>
                     <li><a href="#experience">Experience</a></li>
+                    <li><a href="#connect">Figma</a></li>
+                    <li><a href="#canva">Canva</a></li>
                     <li><a href="#projects">Projects</a></li>
                     <li><a href="#skills">Skills</a></li>
                     <li><a href="#contact">Contact</a></li>
@@ -792,7 +1325,7 @@
             </div>
             <div class="container">
                 <h1>Hi, I'm <span class="highlight">Majeti Sai Sravanthi</span></h1>
-                <p class="tagline">Frontend / UI Developer — building responsive, accessible, and visually engaging web interfaces with React, modern CSS, and pixel-perfect Figma-to-code implementation.</p>
+                <p class="tagline">Frontend / UI Developer — building responsive, scalable, and high-performance web applications with React.js and JavaScript, specializing in RTL UI, REST API integration, and pixel-perfect Figma-to-code implementation.</p>
                 <blockquote class="hero-quote">
                     <p>"The best way to predict the future is to implement it. I turn ideas into interfaces that users love."</p>
                     <cite>— Building the web, one component at a time</cite>
@@ -818,8 +1351,8 @@
         <section id="about" class="container">
             <h2>About Me</h2>
             <div class="about-content">
-                <p>Results-driven <strong>Frontend/UI Developer</strong> with <strong>2 years</strong> of professional experience building responsive, accessible, and visually engaging web interfaces. Proficient in <strong>HTML5, CSS3, JavaScript (ES6+), and React.js</strong>, with expertise in developing <strong>multilingual (RTL/Arabic) UIs</strong> and cross-platform solutions.</p>
-                <p style="margin-top: 1rem;">I specialize in translating <strong>Figma designs into pixel-perfect, production-ready code</strong> while ensuring excellent performance, accessibility (WCAG 2.1), and user experience across all devices and browsers.</p>
+                <p>Frontend/UI Developer with <strong>2 years of experience</strong> building responsive, scalable, and high-performance web applications using <strong>React.js and JavaScript (ES6+)</strong>. Specialized in <strong>RTL (Arabic) UI development</strong>, REST API integration, and translating Figma designs into pixel-perfect interfaces.</p>
+                <p style="margin-top: 1rem;">I focus on <strong>performance, usability, and cross-browser compatibility</strong> — from travel booking platforms to mobile e-commerce concepts — with a strong eye for visual hierarchy, spacing, and mobile-first layout.</p>
             </div>
         </section>
 
@@ -827,16 +1360,15 @@
             <h2>Professional Experience</h2>
             <div class="exp-block">
                 <h3>Frontend / UI Developer</h3>
-                <p class="meta">Sar Tech Easy · Vijayawada, Andhra Pradesh · April 2024 – Present</p>
+                <p class="meta">Sar Tech Easy · Vijayawada, Andhra Pradesh · April 2024 – March 2026</p>
                 <ul>
-                    <li>Developed and maintained dynamic single-page applications using React.js and JavaScript ES6+.</li>
-                    <li>Built responsive, accessible interfaces from Figma mockups using Flexbox and CSS Grid.</li>
-                    <li>Spearheaded RTL UI development for Arabic-speaking markets.</li>
-                    <li>Designed responsive HTML email templates optimized for all major clients.</li>
-                    <li>Integrated REST APIs using fetch and Axios for real-time data handling.</li>
-                    <li>Developed reusable functional components with React Hooks and Context API.</li>
-                    <li>Conducted comprehensive browser and device testing; managed code via Git/GitHub.</li>
-                    <li>Collaborated with UX/UI and QA teams for sprint planning and design consistency.</li>
+                    <li>Developed and maintained scalable React.js applications using Hooks and Context API.</li>
+                    <li>Built pixel-perfect, mobile-first responsive UI from Figma designs.</li>
+                    <li>Implemented RTL (Arabic) UI for international travel platforms.</li>
+                    <li>Integrated REST APIs using Axios/Fetch for dynamic booking workflows.</li>
+                    <li>Designed 25+ responsive HTML email templates across multiple platforms.</li>
+                    <li>Improved UI performance, load time, and cross-browser compatibility.</li>
+                    <li>Managed tasks and bug tracking using ClickUp and Vexa.</li>
                 </ul>
             </div>
         </section>
@@ -848,8 +1380,47 @@
                 <div class="logo-card reveal-item"><img src="./images/dottodot.png" alt="Dot-to-Dot Logo"><p>Dot-to-Dot</p></div>
                 <div class="logo-card reveal-item"><img src="./images/growthandgrit.png" alt="Growth & Grit Logo"><p>Growth & Grit</p></div>
                 <div class="logo-card reveal-item"><img src="./images/keyhouse.png" alt="Key House Logo"><p>Key House</p></div>
-                <div class="logo-card reveal-item"><img src="./images/connect.png" alt="Connect Logo"><p>Connect</p></div>
+                <a href="#connect" class="logo-card reveal-item" style="text-decoration: none;"><img src="./images/connect.png" alt="Connect Logo"><p>Connect</p></a>
                 <div class="logo-card reveal-item"><img src="./images/dinehouse.png" alt="Dine House Logo"><p>Dine House</p></div>
+            </div>
+        </section>
+
+        <section id="connect" class="container">
+            <h2>Figma UI Designs</h2>
+            <div class="connect-intro">
+                <span class="connect-badge"><i class="fas fa-palette"></i> Designed in Figma</span>
+                <div class="connect-intro-text">
+                    <p class="connect-subtitle">Fashion E-Commerce Mobile App</p>
+                    <p>A complete mobile shopping experience with home discovery, category browsing, product cards, and intuitive bottom navigation. Soft, modern palette with clear visual hierarchy for everyday fashion retail.</p>
+                    <div class="connect-pills">
+                        <span>Mobile-first</span>
+                        <span>E-commerce</span>
+                        <span>Category UX</span>
+                        <span>Product discovery</span>
+                    </div>
+                </div>
+            </div>
+            <div class="figma-showcase">
+                <article class="figma-phone">
+                    <div class="figma-phone-frame">
+                        <img src="./images/connect-home.png" alt="Connect app home screen">
+                    </div>
+                    <div class="figma-phone-label">
+                        <span class="figma-screen-num">1</span>
+                        <h3>Home Screen</h3>
+                        <p>Personalized greeting, search bar, category chips, and a scrollable popular products row.</p>
+                    </div>
+                </article>
+                <article class="figma-phone">
+                    <div class="figma-phone-frame">
+                        <img src="./images/connect-categories.png" alt="Connect app categories screen">
+                    </div>
+                    <div class="figma-phone-label">
+                        <span class="figma-screen-num">2</span>
+                        <h3>Categories Screen</h3>
+                        <p>Category cards with item counts and rich previews for Clothing, Shoes, Accessories, and Bags.</p>
+                    </div>
+                </article>
             </div>
         </section>
 
@@ -873,29 +1444,54 @@
             </div>
         </section>
 
+        <section id="canva" class="container">
+            <h2>Canva Designs</h2>
+            <div class="canva-intro">
+                <p>Marketing and promotional graphics created in <strong>Canva</strong> — social ads, hiring posters, product promos, and brand campaigns. Focus on typography, layout hierarchy, and visual storytelling across beauty, food, and corporate themes.</p>
+            </div>
+            <div class="canva-grid">
+                <div class="canva-item">
+                    <img src="./images/canva-perfume.png" alt="Day & Co luxury perfume advertisement">
+                    <div class="canva-caption">
+                        <h3>Day & Co — Luxury Perfume</h3>
+                        <p>Premium brand ad with gold palette and shop-now CTA.</p>
+                        <span class="canva-tag">Luxury</span>
+                    </div>
+                </div>
+                <div class="canva-item">
+                    <img src="./images/canva-skincare.png" alt="Skincare product beauty promotion with 50% off">
+                    <div class="canva-caption">
+                        <h3>Skincare Product</h3>
+                        <p>Beauty promo with product showcase and discount badge.</p>
+                        <span class="canva-tag">Beauty</span>
+                    </div>
+                </div>
+                <div class="canva-item">
+                    <img src="./images/canva-pizza.png" alt="Eat Well Pizza menu and order flyer">
+                    <div class="canva-caption">
+                        <h3>Eat Well Pizza</h3>
+                        <p>Restaurant menu flyer with pricing and order-now CTA.</p>
+                        <span class="canva-tag">Food</span>
+                    </div>
+                </div>
+                <div class="canva-item">
+                    <img src="./images/canva-hiring.png" alt="We Are Hiring recruitment poster">
+                    <div class="canva-caption">
+                        <h3>We Are Hiring</h3>
+                        <p>Corporate recruitment poster with open roles and requirements.</p>
+                        <span class="canva-tag">Corporate</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="projects" class="container">
             <h2>Key Projects</h2>
             <div class="exp-item">
-                <h3>Danth Travels — B2B/B2C Travel Solution <span>(React.js)</span></h3>
-                <p>Developed responsive booking modules and dashboards. Integrated REST APIs for dynamic fare search and booking management.</p>
+                <h3>Travel Platforms <span>(React.js)</span></h3>
+                <p><strong>Danth Travels, Book N Travel, MagicFares, Blue Sky Port, BookitnGo</strong> — developed end-to-end flight booking workflows including search, results, and fare selection; built dynamic dashboards with real-time API integration; implemented filtering, sorting, and pagination; created reusable UI components for scalable partner platforms.</p>
             </div>
-            <div class="exp-item">
-                <h3>Book N Travel — B2B Travel Portal <span>(React.js)</span></h3>
-                <p>Created partner dashboards and booking UIs with reusable, white-label components and real-time data fetching.</p>
-            </div>
-            <div class="exp-item">
-                <h3>MagicFares — Personalized Travel Platform <span>(React Hooks)</span></h3>
-                <p>Implemented advanced filtering, sorting, and pagination for travel deals using React Hooks and modular components.</p>
-            </div>
-            <div class="exp-item">
-                <h3>Blue Sky Port — Travel Management System <span>(Admin Panels)</span></h3>
-                <p>Developed admin panels for booking management (edit, void, refund) and created responsive user workflows.</p>
-            </div>
-            <div class="exp-item">
-                <h3>BookitnGo — Sustainable Travel Platform <span>(Fleet & Logistics)</span></h3>
-                <p>Built scalable UI for fleet management and travel logistics with optimized API integration and UX design.</p>
-            </div>
-            <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.95rem;"><strong style="color: var(--text-main);">Additional:</strong> Corporate Email Template Design System (25+ reusable templates, WCAG 2.1); RTL Travel Management Dashboard (LTR to RTL conversion, user testing with Arabic stakeholders).</p>
+            <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.95rem;"><strong style="color: var(--text-main);">Additional:</strong> 25+ responsive HTML email templates across multiple platforms; RTL (Arabic) UI for international travel platforms.</p>
         </section>
 
         <section id="skills" class="container">
@@ -904,17 +1500,20 @@
                 <div class="skill-tag">HTML5 / CSS3</div>
                 <div class="skill-tag">JavaScript (ES6+)</div>
                 <div class="skill-tag">React.js</div>
-                <div class="skill-tag">Flexbox & CSS Grid</div>
                 <div class="skill-tag">Tailwind CSS</div>
                 <div class="skill-tag">Bootstrap</div>
                 <div class="skill-tag">RTL / Arabic UI</div>
-                <div class="skill-tag">Figma to Code</div>
-                <div class="skill-tag">REST API Integration</div>
+                <div class="skill-tag">Figma / Canva</div>
+                <div class="skill-tag">REST APIs</div>
+                <div class="skill-tag">State Management</div>
+                <div class="skill-tag">Responsive Design</div>
+                <div class="skill-tag">Cross-Browser Compatibility</div>
                 <div class="skill-tag">Git / GitHub</div>
                 <div class="skill-tag">Chrome DevTools</div>
-                <div class="skill-tag">Accessibility (WCAG 2.1)</div>
-                <div class="skill-tag">Email Template Design</div>
-                <div class="skill-tag">Mobile-First</div>
+                <div class="skill-tag">VS Code / Cursor</div>
+                <div class="skill-tag">Postman</div>
+                <div class="skill-tag">ClickUp / Vexa</div>
+                <div class="skill-tag">Email Templates</div>
             </div>
         </section>
 
@@ -923,14 +1522,14 @@
             <div class="info-cards">
                 <div class="info-card">
                     <h3><i class="fas fa-graduation-cap"></i> Education</h3>
-                    <p><strong>B.E. in Computer Science</strong><br>St. Ann's College of Engineering and Technology, Chirala<br>2020 – 2024 · CGPA: 7.2/10</p>
+                    <p><strong>B.E. Computer Science & Engineering</strong><br>St. Ann's College of Engineering and Technology<br>2020 – 2024 · CGPA: 7.4</p>
                 </div>
                 <div class="info-card">
                     <h3><i class="fas fa-certificate"></i> Certifications</h3>
                     <ul>
                         <li>Python Problem Solving — HackerRank</li>
-                        <li>Fundamentals of Digital Marketing — Google Digital Garage</li>
-                        <li>Introduction to Web Development — Sololearn</li>
+                        <li>Digital Marketing — Google</li>
+                        <li>Web Development — Sololearn</li>
                     </ul>
                 </div>
             </div>
@@ -958,63 +1557,139 @@
     </div>
 
     <script>
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    entry.target.querySelectorAll('.reveal-item').forEach((el, i) => {
-                        el.style.animationDelay = (i * 0.08) + 's';
-                        el.classList.add('visible');
-                    });
-                }
-            });
-        }, { threshold: 0.08 });
-        document.querySelectorAll('section').forEach((section, i) => {
-            observer.observe(section);
-            if (i % 2 === 0) section.classList.add('slide-left');
-            else section.classList.add('slide-right');
-        });
-        document.querySelectorAll('.logo-card.reveal-item').forEach(card => observer.observe(card));
-        const nav = document.getElementById('nav');
-        window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 50));
-
-        // Particles move toward cursor in hero section (like the reference)
-        (function() {
-            const hero = document.querySelector('.hero');
-            const particlesContainer = document.querySelector('.hero .bg-particles');
-            if (!hero || !particlesContainer) return;
-            const particles = particlesContainer.querySelectorAll('.particle');
-            const pullStrength = 0.035;
-            let mouseX = null, mouseY = null;
-            let ticking = false;
-
-            function updateParticles() {
-                if (mouseX === null || mouseY === null) { ticking = false; return; }
-                particles.forEach(p => {
-                    const r = p.getBoundingClientRect();
-                    const centerX = r.left + r.width / 2;
-                    const centerY = r.top + r.height / 2;
-                    const dx = (mouseX - centerX) * pullStrength;
-                    const dy = (mouseY - centerY) * pullStrength;
-                    p.style.transform = `translate(${dx}px, ${dy}px)`;
+        (function () {
+            const staggerTargets = [
+                '.about-content p', '.exp-block', '.connect-intro', '.canva-intro',
+                '.logo-card', '.figma-phone', '.redesign-item', '.canva-item',
+                '.exp-item', '.skill-tag', '.info-card', '.attr-pill'
+            ];
+            staggerTargets.forEach(sel => {
+                document.querySelectorAll(sel).forEach(el => {
+                    if (!el.classList.contains('reveal-item')) el.classList.add('reveal-up');
                 });
-                requestAnimationFrame(updateParticles);
+            });
+            document.querySelectorAll('section:not(.hero) h2').forEach(el => el.classList.add('reveal-up'));
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const el = entry.target;
+                    el.classList.add('visible');
+                    if (el.classList.contains('reveal-item') || el.classList.contains('reveal-up')) {
+                        const parent = el.closest('section, .logo-grid, .figma-showcase, .canva-grid, .skills-container, .attributes, .info-cards, .redesign-grid');
+                        if (parent) {
+                            const siblings = parent.querySelectorAll('.reveal-item, .reveal-up');
+                            const idx = Array.from(siblings).indexOf(el);
+                            el.style.transitionDelay = (idx * 0.07) + 's';
+                        }
+                    }
+                    el.querySelectorAll('.reveal-item').forEach((child, i) => {
+                        child.style.animationDelay = (i * 0.08) + 's';
+                        child.classList.add('visible');
+                    });
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+            document.querySelectorAll('section').forEach((section, i) => {
+                revealObserver.observe(section);
+                if (i % 2 === 0) section.classList.add('slide-left');
+                else section.classList.add('slide-right');
+            });
+            document.querySelectorAll('.reveal-up, .reveal-item').forEach(el => revealObserver.observe(el));
+
+            const nav = document.getElementById('nav');
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+            const navOverlay = document.getElementById('navOverlay');
+            const scrollProgress = document.getElementById('scrollProgress');
+            const backToTop = document.getElementById('backToTop');
+            const navLinks = document.querySelectorAll('nav a[href^="#"]');
+            const sections = [...document.querySelectorAll('section[id], footer[id]')];
+
+            function closeNavMenu() {
+                nav?.classList.remove('menu-open');
+                navOverlay?.classList.remove('visible');
+                navToggle?.setAttribute('aria-expanded', 'false');
+                navToggle?.setAttribute('aria-label', 'Open menu');
+                document.body.style.overflow = '';
             }
 
-            hero.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                if (!ticking) {
-                    ticking = true;
+            function openNavMenu() {
+                nav?.classList.add('menu-open');
+                navOverlay?.classList.add('visible');
+                navToggle?.setAttribute('aria-expanded', 'true');
+                navToggle?.setAttribute('aria-label', 'Close menu');
+                document.body.style.overflow = 'hidden';
+            }
+
+            navToggle?.addEventListener('click', () => {
+                nav?.classList.contains('menu-open') ? closeNavMenu() : openNavMenu();
+            });
+            navOverlay?.addEventListener('click', closeNavMenu);
+            navMenu?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeNavMenu));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeNavMenu();
+            });
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 900) closeNavMenu();
+            });
+
+            function onScroll() {
+                const y = window.scrollY;
+                const docH = document.documentElement.scrollHeight - window.innerHeight;
+                if (scrollProgress) scrollProgress.style.width = (docH > 0 ? (y / docH) * 100 : 0) + '%';
+                nav.classList.toggle('scrolled', y > 50);
+                backToTop?.classList.toggle('visible', y > 500);
+
+                let current = '';
+                sections.forEach(sec => {
+                    if (y >= sec.offsetTop - 120) current = sec.id;
+                });
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (!href || href === '#') return;
+                    const id = href.slice(1);
+                    link.classList.toggle('active', id === current);
+                });
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+
+            backToTop?.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            const hero = document.querySelector('.hero');
+            const particlesContainer = document.querySelector('.hero .bg-particles');
+            if (hero && particlesContainer) {
+                const particles = particlesContainer.querySelectorAll('.particle');
+                const pullStrength = 0.035;
+                let mouseX = null, mouseY = null;
+                let ticking = false;
+
+                function updateParticles() {
+                    if (mouseX === null || mouseY === null) { ticking = false; return; }
+                    particles.forEach(p => {
+                        const r = p.getBoundingClientRect();
+                        const dx = (mouseX - r.left - r.width / 2) * pullStrength;
+                        const dy = (mouseY - r.top - r.height / 2) * pullStrength;
+                        p.style.transform = `translate(${dx}px, ${dy}px)`;
+                    });
                     requestAnimationFrame(updateParticles);
                 }
-            });
-            hero.addEventListener('mouseleave', () => {
-                mouseX = null;
-                mouseY = null;
-                ticking = false;
-                particles.forEach(p => { p.style.transform = 'translate(0, 0)'; });
-            });
+
+                hero.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    if (!ticking) { ticking = true; requestAnimationFrame(updateParticles); }
+                });
+                hero.addEventListener('mouseleave', () => {
+                    mouseX = mouseY = null;
+                    ticking = false;
+                    particles.forEach(p => { p.style.transform = 'translate(0, 0)'; });
+                });
+            }
         })();
     </script>
 </body>
